@@ -1,8 +1,4 @@
-from sklearn import datasets
-from sklearn.cross_validation import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import Perceptron
-from sklearn.metrics import accuracy_score
+from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import numpy as np
@@ -30,35 +26,19 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
         X_test, y_test = X[test_idx, :], y[test_idx]
         plt.scatter(X_test[:,0], X_test[:,1], c='', marker='o',linewidths=1, s=55, label='test set')
 
-#Load the IRIS datasets and prepare model's variables
-iris = datasets.load_iris()
-X= iris.data[:,[2,3]]
-Y = iris.target
+#Generate random XOR samples using an normal Gaussian distribution
+np.random.seed(0)
+X_XOR = np.random.randn(200,2)
+Y_XOR = np.logical_xor(X_XOR[:,0]>0, X_XOR[:,1]>0)
+Y_XOR = np.where(Y_XOR, 1, -1)
 
-#Split our data into train/test set
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=0)
+#Train a RBF SVM
+svm = SVC(kernel='rbf', random_state=0, gamma=0.1, C=10.0)
+svm.fit(X_XOR,Y_XOR)
 
-#Standerize our features
-sc = StandardScaler()
-sc.fit(X_train)
-X_train_std = sc.transform(X_train)
-X_test_std = sc.transform(X_test)
-
-#Train our percetron model
-ppn = Perceptron(n_iter=40, eta0=0.1, random_state=0)
-ppn.fit(X_train_std, Y_train)
-
-#Prediction for our test data
-Y_predicted = ppn.predict(X_test_std)
-
-print("Our Perceptron fails to classify : %d" %(Y_test != Y_predicted).sum())
-print('Accuracy: %.2f' %accuracy_score(Y_test, Y_predicted))
-
-X_full_std = np.vstack((X_train_std, X_test_std))
-Y_full = np.hstack((Y_train, Y_test))
-
-plot_decision_regions(X=X_full_std, y=Y_full, classifier=ppn, test_idx=range(105,150))
-plt.xlabel('petal length std')
-plt.ylabel('petal width std')
+#Plot the decision boundries
+plot_decision_regions(X_XOR, Y_XOR, classifier=svm)
 plt.legend(loc='upper left')
+plt.title('XOR with RBF SVM')
 plt.show()
+

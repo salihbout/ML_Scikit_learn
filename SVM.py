@@ -1,7 +1,7 @@
 from sklearn import datasets
 from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import Perceptron
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
@@ -44,21 +44,50 @@ sc.fit(X_train)
 X_train_std = sc.transform(X_train)
 X_test_std = sc.transform(X_test)
 
+################# SVM with LINEAR kernel ###########################
 #Train our percetron model
-ppn = Perceptron(n_iter=40, eta0=0.1, random_state=0)
-ppn.fit(X_train_std, Y_train)
+svm = SVC(kernel='linear', C=1.0, random_state=0)
+svm.fit(X_train_std, Y_train)
 
 #Prediction for our test data
-Y_predicted = ppn.predict(X_test_std)
+Y_predicted = svm.predict(X_test_std)
 
-print("Our Perceptron fails to classify : %d" %(Y_test != Y_predicted).sum())
-print('Accuracy: %.2f' %accuracy_score(Y_test, Y_predicted))
-
+#Groupe the train and test data
 X_full_std = np.vstack((X_train_std, X_test_std))
 Y_full = np.hstack((Y_train, Y_test))
 
-plot_decision_regions(X=X_full_std, y=Y_full, classifier=ppn, test_idx=range(105,150))
+
+print("SVM linear kernel fails to classify : %d" %(Y_test != Y_predicted).sum())
+print('Accuracy: %.2f' %accuracy_score(Y_test, Y_predicted))
+
+
+plot_decision_regions(X=X_full_std, y=Y_full, classifier=svm, test_idx=range(105,150))
 plt.xlabel('petal length std')
 plt.ylabel('petal width std')
+plt.title('SVM with linear kernel')
+plt.legend(loc='upper left')
+plt.show()
+
+################# SVM with GAUSSIAN kernel ###########################
+#Train our percetron model
+svm = SVC(kernel='rbf',  random_state=0, gamma=100, C=10.0)
+svm.fit(X_train_std, Y_train)
+
+#Prediction for our test data
+Y_predicted = svm.predict(X_test_std)
+
+#Groupe the train and test data
+X_full_std = np.vstack((X_train_std, X_test_std))
+Y_full = np.hstack((Y_train, Y_test))
+
+
+print("SVM Gaussian kernel fails to classify : %d" %(Y_test != Y_predicted).sum())
+print('Accuracy: %.2f' %accuracy_score(Y_test, Y_predicted))
+
+
+plot_decision_regions(X=X_full_std, y=Y_full, classifier=svm, test_idx=range(105,150))
+plt.xlabel('petal length std')
+plt.ylabel('petal width std')
+plt.title('SVM with linear kernel')
 plt.legend(loc='upper left')
 plt.show()
