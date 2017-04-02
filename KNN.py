@@ -36,7 +36,7 @@ X_full_std = np.vstack((X_train_std, X_test_std))
 Y_full = np.hstack((Y_train, Y_test))
 
 
-print("Random Forest fails to classify : %d" %(Y_test != Y_predicted).sum())
+print("KNN fails to classify : %d" %(Y_test != Y_predicted).sum())
 print('Accuracy: %.2f' %accuracy_score(Y_test, Y_predicted))
 
 
