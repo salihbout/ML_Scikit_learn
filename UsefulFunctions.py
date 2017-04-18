@@ -25,3 +25,10 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
     if test_idx :
         X_test, y_test = X[test_idx, :], y[test_idx]
         plt.scatter(X_test[:,0], X_test[:,1], c='', marker='o',linewidths=1, s=55, label='test set')
+
+
+
+def lin_regplot(X, Y, model) :
+    plt.scatter(X, Y , c='blue')
+    plt.plot(X, model.predict(X), color='red')
+    return None
